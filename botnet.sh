@@ -7,6 +7,9 @@
 # and many things are simplified to demonstrate the concept of botnets
 # for the purposes of the lab.
 
+# When you are finished with the lab, please clean up after yourselves and
+# run "./kill_botnet.sh 4 120 <utorid>" :)
+
 
 # [OVERVIEW]
 
@@ -16,20 +19,26 @@
 
 # In this lab, we will be exploring 4 of the 5 phases of the botnet lifecycle:
 # Infection -> Propagation -> Connection -> Control
+
 # We will not be covering Maintainence & Upgrading.
 
 
-# [PERMISSIONS]
+# [REQUIREMENTS]
 
-# Run "chmod u+x c2.py bot.py botnet.sh kill_botnet.sh"
+# Run "chmod u+x c2.py bot.py botnet.sh kill_botnet.sh" to add execute permissions.
 
+# Run "pip install -r requirements.txt" inside the "MHDDoS" directory.
 
 # [RUNNING IRC SERVER]
 
-# Run "ifconfig" and look for the ipv4 address of the eno1 network interface.
-# Edit the "ircd.yaml" file.
-# Under "server -> listeners", replace 127.0.0.1 with this address.
-# This will be the ip address that our botmaster and bots will connect to.
+# Run "ifconfig" and make a note of the ipv4 address of the eno1 network interface.
+# This will be the ip address that the IRC server will run on and that
+# our botmaster and bots will connect to.
+
+# Edit the "ergo-2.13.0-linux-x86_64/ircd.yaml" file.
+# Under "server -> listeners", replace 127.0.0.1 with the address you found.
+
+# Navigate to the "ergo-2.13.0-linux-x86_64" directory and run "./ergo run" to start the server.
 
 # QUESTION: What is the standard plaintext port that our bots use to connect to the IRC server?
 # ANSWER: 
@@ -37,7 +46,7 @@
 
 # [JOINING IRC SERVER AS BOTMASTER]
 
-# In a separate terminal, run "./c2.py <irc_server_ip>" to start the C2 server on this lab pc.
+# In a separate terminal, run "./c2.py <irc_server_ip>" to join the IRC server as the botmaster.
 
 
 # [RECONNAISSANCE]
