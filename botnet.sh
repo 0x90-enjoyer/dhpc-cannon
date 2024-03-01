@@ -133,7 +133,7 @@ done
 # In a separate terminal, run the command "python3 -m http.server -b <ip_address> 8080"
 # to start the victim server (run "ifconfig" if you don't remember).
 
-# Send the command "DDOS TCP <target_ip> <target_port> 8 10" from the botmaster IRC client.
+# Send the command "DDOS TCP <target_ip>:<target_port> 8 10" from the botmaster IRC client.
 
 # QUESTION: What does this command do?
 # ANSWER: 
