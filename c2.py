@@ -5,6 +5,10 @@ import socket
 import sys
 import threading
 
+if len(sys.argv) != 2:
+    print("Usage: ./c2.py <irc_server_ip>")
+    sys.exit()
+
 local_ip = socket.gethostbyname(socket.gethostname())
 
 server = sys.argv[1]
