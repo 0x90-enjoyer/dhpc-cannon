@@ -23,9 +23,9 @@ fi
 # [OVERVIEW]
 
 # In this interactive lab, we will be exploring 3 of the 4 phases of the botnet lifecycle:
-# Infection (+ Propagation) -> Connection -> Control
+# Infection (+ Propagation) -> Connection -> Control.
 
-# We will not be covering Maintainence & Upgrading
+# We will not be covering Maintainence & Upgrading.
 
 
 # [REQUIREMENTS]
