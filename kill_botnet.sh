@@ -1,6 +1,6 @@
 if [ $# -ne 2 ]; then
     echo "Usage: ./kill-botnet.sh <range_start> <range_end>"
-    echo "Example: To kill botnet on ip range (192.168.0.69 - 192.168.0.96), run \"./kill-botnet.sh 69 96\"."
+    echo "Example: To kill botnet on ip range (142.1.46.66 - 142.1.46.99), run \"./kill-botnet.sh 66 99\"."
     exit
 fi
 
