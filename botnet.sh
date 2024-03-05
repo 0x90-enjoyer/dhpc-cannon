@@ -30,7 +30,7 @@ fi
 
 # [REQUIREMENTS]
 
-# Run "chmod u+x c2.py bot.py botnet.sh kill_botnet.sh" to add execute permissions.
+# Run "chmod u+x botmaster.py bot.py botnet.sh kill_botnet.sh" to add execute permissions.
 
 # Run "pip install -r requirements.txt" inside the "MHDDoS" directory.
 
@@ -49,7 +49,7 @@ fi
 # our botmaster and bots will connect to.
 
 # TODO: Replace this with your ip address.
-irc_server_ip=""
+irc_server_ip="142.1.46.4"
 
 # Edit the "ergo-2.13.0-linux-x86_64/ircd.yaml" file.
 # Under "server -> listeners", replace 127.0.0.1 with your ip address.
@@ -65,10 +65,10 @@ irc_server_ip=""
 
 # Create a new terminal in the base directory.
 
-# Run "./c2.py <irc_server_ip>" to join the IRC server as the botmaster.
+# Run "./botmaster.py <irc_server_ip>" to join the IRC server as the botmaster.
 # Observe the IRC server and the botmaster client output.
 
-# QUESTION: What nickname did our "c2.py" script use to join the IRC server?
+# QUESTION: What nickname did our "botmaster.py" script use to join the IRC server?
 # ANSWER: master-_______________
 
 

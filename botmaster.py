@@ -6,7 +6,7 @@ import sys
 import threading
 
 if len(sys.argv) != 2:
-    print("Usage: ./c2.py <irc_server_ip>")
+    print("Usage: ./botmaster.py <irc_server_ip>")
     sys.exit()
 
 local_ip = socket.gethostbyname(socket.gethostname())
